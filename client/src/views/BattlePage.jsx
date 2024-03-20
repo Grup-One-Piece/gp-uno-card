@@ -1,13 +1,9 @@
 import logo from "../assets/logo.png";
 import backcard from "../assets/Deck.png";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import queryString from "query-string";
-import { useContext, useEffect, useState } from "react";
-import { useLocation } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import queryString from 'query-string'
 import io from "socket.io-client";
 import shuffleArray from "../utils/shuffleArray";
 import PACK_OF_CARDS from "../utils/packOfCards";
@@ -52,12 +48,13 @@ import nineG from "../assets/cards-front/9G.png";
 import nineY from "../assets/cards-front/9Y.png";
 import nineR from "../assets/cards-front/9R.png";
 import Swal from "sweetalert2";
-import { ThemeContext } from '../contexts/ThemeContext';
+import { ThemeContext } from "../contexts/ThemeContext";
 
-let socket
+let socket;
 const ENDPOINT = "http://localhost:3000";
 
 function BattlePage() {
+  const { theme, currentTheme, setCurrentTheme } = useContext(ThemeContext);
   const location = useLocation();
   const data = queryString.parse(location.search);
 
@@ -70,7 +67,7 @@ function BattlePage() {
 
   useEffect(() => {
     if (!room) {
-      console.error("Room code not found");
+      console.error("Room code not provided in query parameters");
       return;
     }
 
@@ -273,32 +270,384 @@ function BattlePage() {
     }
   };
 
-    const sendMessage = (event) => {
-        event.preventDefault();
-        if (message) {
-            socket.emit("sendMessage", { message: message }, () => {
-                setMessage("");
-            });
-        }
-    };
+  const sendMessage = (event) => {
+    event.preventDefault();
+    if (message) {
+      socket.emit("sendMessage", { message: message }, () => {
+        setMessage("");
+      });
+    }
+  };
 
-    return (
-        <div >
-            {!roomFull ? (
-                <>
-                    <div className='topInfo'>
-                        <img src={logo} />
-                        <h1>Game Code: {room}</h1>
-                    </div>
-                    {/* PLAYER LEFT MESSAGES */}
-                    {users.length === 1 && currentUser === "Player 2" && (
-                        <h1 className="topInfoText">Player 1 has left the game.</h1>
-                    )}
-                    {users.length === 1 && currentUser === "Player 1" && (
-                        <h1 className="topInfoText">
-                            Waiting for Player 2 to join the game.
-                        </h1>
-                    )}
+  const HandleOnCardPlayed = (played_card) => {
+    const cardPlayedBy = turn;
+    switch (played_card) {
+      case "0R":
+      case "1R":
+      case "2R":
+      case "3R":
+      case "4R":
+      case "5R":
+      case "6R":
+      case "7R":
+      case "8R":
+      case "9R":
+      case "0G":
+      case "1G":
+      case "2G":
+      case "3G":
+      case "4G":
+      case "5G":
+      case "6G":
+      case "7G":
+      case "8G":
+      case "9G":
+      case "0B":
+      case "1B":
+      case "2B":
+      case "3B":
+      case "4B":
+      case "5B":
+      case "6B":
+      case "7B":
+      case "8B":
+      case "9B":
+      case "0Y":
+      case "1Y":
+      case "2Y":
+      case "3Y":
+      case "4Y":
+      case "5Y":
+      case "6Y":
+      case "7Y":
+      case "8Y":
+      case "9Y": {
+        const numberOfPlayedCard = played_card.charAt(0);
+        const colorOfPlayedCard = played_card.charAt(played_card.length - 1);
+        if (currentColor === colorOfPlayedCard) {
+          console.log("colors matched!");
+          if (cardPlayedBy === "Player 1") {
+            const removeIndex = player1Deck.indexOf(played_card);
+            if (player1Deck.length === 2 && !isUnoButtonPressed) {
+              Swal.fire({
+                icon: "error",
+                title:
+                  "Oops! You forgot to press UNO. You drew 1 cards as penalty.",
+              });
+              const copiedDrawCardPileArray = [...drawCardPile];
+              const drawCard1 = copiedDrawCardPileArray.pop();
+              const drawCard2 = copiedDrawCardPileArray.pop();
+              const updatedPlayer1Deck = [
+                ...player1Deck.slice(0, removeIndex),
+                ...player1Deck.slice(removeIndex + 1),
+              ];
+              updatedPlayer1Deck.push(drawCard1);
+              updatedPlayer1Deck.push(drawCard2);
+              socket.emit("updateGameState", {
+                gameOver: checkGameOver(player1Deck),
+                winner: checkWinner(player1Deck, "Player 1"),
+                turn: "Player 2",
+                playedCardsPile: [
+                  ...playedCardsPile.slice(0, playedCardsPile.length),
+                  played_card,
+                  ...playedCardsPile.slice(playedCardsPile.length),
+                ],
+                player1Deck: [...updatedPlayer1Deck],
+                currentColor: colorOfPlayedCard,
+                currentNumber: numberOfPlayedCard,
+                drawCardPile: [...copiedDrawCardPileArray],
+              });
+            } else {
+              socket.emit("updateGameState", {
+                gameOver: checkGameOver(player1Deck),
+                winner: checkWinner(player1Deck, "Player 1"),
+                turn: "Player 2",
+                playedCardsPile: [
+                  ...playedCardsPile.slice(0, playedCardsPile.length),
+                  played_card,
+                  ...playedCardsPile.slice(playedCardsPile.length),
+                ],
+                player1Deck: [
+                  ...player1Deck.slice(0, removeIndex),
+                  ...player1Deck.slice(removeIndex + 1),
+                ],
+                currentColor: colorOfPlayedCard,
+                currentNumber: numberOfPlayedCard,
+              });
+            }
+          } else {
+            const removeIndex = player2Deck.indexOf(played_card);
+            if (player2Deck.length === 2 && !isUnoButtonPressed) {
+              Swal.fire({
+                icon: "error",
+                title:
+                  "Oops! You forgot to press UNO. You drew 1 cards as penalty.",
+              });
+
+              const copiedDrawCardPileArray = [...drawCardPile];
+              const drawCard1 = copiedDrawCardPileArray.pop();
+              const drawCard2 = copiedDrawCardPileArray.pop();
+              const updatedPlayer2Deck = [
+                ...player2Deck.slice(0, removeIndex),
+                ...player2Deck.slice(removeIndex + 1),
+              ];
+              updatedPlayer2Deck.push(drawCard1);
+              updatedPlayer2Deck.push(drawCard2);
+              socket.emit("updateGameState", {
+                gameOver: checkGameOver(player2Deck),
+                winner: checkWinner(player2Deck, "Player 2"),
+                turn: "Player 1",
+                playedCardsPile: [
+                  ...playedCardsPile.slice(0, playedCardsPile.length),
+                  played_card,
+                  ...playedCardsPile.slice(playedCardsPile.length),
+                ],
+                player2Deck: [...updatedPlayer2Deck],
+                currentColor: colorOfPlayedCard,
+                currentNumber: numberOfPlayedCard,
+                drawCardPile: [...copiedDrawCardPileArray],
+              });
+            } else {
+              socket.emit("updateGameState", {
+                gameOver: checkGameOver(player2Deck),
+                winner: checkWinner(player2Deck, "Player 2"),
+                turn: "Player 1",
+                playedCardsPile: [
+                  ...playedCardsPile.slice(0, playedCardsPile.length),
+                  played_card,
+                  ...playedCardsPile.slice(playedCardsPile.length),
+                ],
+                player2Deck: [
+                  ...player2Deck.slice(0, removeIndex),
+                  ...player2Deck.slice(removeIndex + 1),
+                ],
+                currentColor: colorOfPlayedCard,
+                currentNumber: numberOfPlayedCard,
+              });
+            }
+          }
+        } else if (currentNumber === numberOfPlayedCard) {
+          console.log("numbers matched!");
+          if (cardPlayedBy === "Player 1") {
+            const removeIndex = player1Deck.indexOf(played_card);
+            if (player1Deck.length === 2 && !isUnoButtonPressed) {
+              Swal.fire({
+                icon: "error",
+                title:
+                  "Oops! You forgot to press UNO. You drew 1 cards as penalty.",
+              });
+              const copiedDrawCardPileArray = [...drawCardPile];
+              const drawCard1 = copiedDrawCardPileArray.pop();
+              const drawCard2 = copiedDrawCardPileArray.pop();
+              const updatedPlayer1Deck = [
+                ...player1Deck.slice(0, removeIndex),
+                ...player1Deck.slice(removeIndex + 1),
+              ];
+              updatedPlayer1Deck.push(drawCard1);
+              updatedPlayer1Deck.push(drawCard2);
+              socket.emit("updateGameState", {
+                gameOver: checkGameOver(player1Deck),
+                winner: checkWinner(player1Deck, "Player 1"),
+                turn: "Player 2",
+                playedCardsPile: [
+                  ...playedCardsPile.slice(0, playedCardsPile.length),
+                  played_card,
+                  ...playedCardsPile.slice(playedCardsPile.length),
+                ],
+                player1Deck: [...updatedPlayer1Deck],
+                currentColor: colorOfPlayedCard,
+                currentNumber: numberOfPlayedCard,
+                drawCardPile: [...copiedDrawCardPileArray],
+              });
+            } else {
+              socket.emit("updateGameState", {
+                gameOver: checkGameOver(player1Deck),
+                winner: checkWinner(player1Deck, "Player 1"),
+                turn: "Player 2",
+                playedCardsPile: [
+                  ...playedCardsPile.slice(0, playedCardsPile.length),
+                  played_card,
+                  ...playedCardsPile.slice(playedCardsPile.length),
+                ],
+                player1Deck: [
+                  ...player1Deck.slice(0, removeIndex),
+                  ...player1Deck.slice(removeIndex + 1),
+                ],
+                currentColor: colorOfPlayedCard,
+                currentNumber: numberOfPlayedCard,
+              });
+            }
+          } else {
+            const removeIndex = player2Deck.indexOf(played_card);
+            if (player2Deck.length === 2 && !isUnoButtonPressed) {
+              Swal.fire({
+                icon: "error",
+                title:
+                  "Oops! You forgot to press UNO. You drew 1 cards as penalty.",
+              });
+              const copiedDrawCardPileArray = [...drawCardPile];
+              const drawCard1 = copiedDrawCardPileArray.pop();
+              const drawCard2 = copiedDrawCardPileArray.pop();
+              const updatedPlayer2Deck = [
+                ...player2Deck.slice(0, removeIndex),
+                ...player2Deck.slice(removeIndex + 1),
+              ];
+              updatedPlayer2Deck.push(drawCard1);
+              updatedPlayer2Deck.push(drawCard2);
+              socket.emit("updateGameState", {
+                gameOver: checkGameOver(player2Deck),
+                winner: checkWinner(player2Deck, "Player 2"),
+                turn: "Player 1",
+                playedCardsPile: [
+                  ...playedCardsPile.slice(0, playedCardsPile.length),
+                  played_card,
+                  ...playedCardsPile.slice(playedCardsPile.length),
+                ],
+                player2Deck: [...updatedPlayer2Deck],
+                currentColor: colorOfPlayedCard,
+                currentNumber: numberOfPlayedCard,
+                drawCardPile: [...copiedDrawCardPileArray],
+              });
+            } else {
+              socket.emit("updateGameState", {
+                gameOver: checkGameOver(player2Deck),
+                winner: checkWinner(player2Deck, "Player 2"),
+                turn: "Player 1",
+                playedCardsPile: [
+                  ...playedCardsPile.slice(0, playedCardsPile.length),
+                  played_card,
+                  ...playedCardsPile.slice(playedCardsPile.length),
+                ],
+                player2Deck: [
+                  ...player2Deck.slice(0, removeIndex),
+                  ...player2Deck.slice(removeIndex + 1),
+                ],
+                currentColor: colorOfPlayedCard,
+                currentNumber: numberOfPlayedCard,
+              });
+            }
+          }
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Invalid Move! Tolol.",
+          });
+        }
+        break;
+      }
+    }
+  };
+
+  const handleOnCardDraw = () => {
+    const cardDrawnBy = turn;
+    if (cardDrawnBy === "Player 1") {
+      const copiedDrawCardPileArray = [...drawCardPile];
+      const drawCard = copiedDrawCardPileArray.pop();
+      const colorOfDrawnCard = drawCard.charAt(drawCard.length - 1);
+      let numberOfDrawnCard = drawCard.charAt(0);
+      if (
+        numberOfDrawnCard === currentNumber ||
+        colorOfDrawnCard === currentColor
+      ) {
+        Swal.fire({
+          title: `You drew ${drawCard}. It was played for you.`,
+          icon: "success",
+        });
+        socket.emit("updateGameState", {
+          turn: "Player 2",
+          playedCardsPile: [
+            ...playedCardsPile.slice(0, playedCardsPile.length),
+            drawCard,
+            ...playedCardsPile.slice(playedCardsPile.length),
+          ],
+          currentColor: colorOfDrawnCard,
+          currentNumber: numberOfDrawnCard,
+          drawCardPile: [...copiedDrawCardPileArray],
+        });
+      } else {
+        socket.emit("updateGameState", {
+          turn: "Player 2",
+          player1Deck: [
+            ...player1Deck.slice(0, player1Deck.length),
+            drawCard,
+            ...player1Deck.slice(player1Deck.length),
+          ],
+          drawCardPile: [...copiedDrawCardPileArray],
+        });
+      }
+    } else {
+      const copiedDrawCardPileArray = [...drawCardPile];
+      const drawCard = copiedDrawCardPileArray.pop();
+      const colorOfDrawnCard = drawCard.charAt(drawCard.length - 1);
+      let numberOfDrawnCard = drawCard.charAt(0);
+      if (
+        numberOfDrawnCard === currentNumber ||
+        colorOfDrawnCard === currentColor
+      ) {
+        Swal.fire({
+          icon: "success",
+          title: `You drew ${drawCard}. It was played for you.`,
+        });
+
+        socket.emit("updateGameState", {
+          turn: "Player 1",
+          playedCardsPile: [
+            ...playedCardsPile.slice(0, playedCardsPile.length),
+            drawCard,
+            ...playedCardsPile.slice(playedCardsPile.length),
+          ],
+          currentColor: colorOfDrawnCard,
+          currentNumber: numberOfDrawnCard,
+          drawCardPile: [...copiedDrawCardPileArray],
+        });
+      } else {
+        socket.emit("updateGameState", {
+          turn: "Player 1",
+          player2Deck: [
+            ...player2Deck.slice(0, player2Deck.length),
+            drawCard,
+            ...player2Deck.slice(player2Deck.length),
+          ],
+          drawCardPile: [...copiedDrawCardPileArray],
+        });
+      }
+    }
+  };
+
+  const midleCardP1 = `/src/assets/cards-front/${
+    playedCardsPile[playedCardsPile.length - 1]
+  }.png`;
+  const midleCardP2 = `/src/assets/cards-front/${
+    playedCardsPile[playedCardsPile.length - 1]
+  }.png`;
+
+  return (
+    <div>
+      <img src={theme[currentTheme].backgroundImage} alt="background" />
+      {!roomFull ? (
+        <>
+          <div className="topInfo">
+            <img src={logo} />
+            <h1>Game Code: {room}</h1>
+            <button
+              onClick={() =>
+                setCurrentTheme((current_theme) =>
+                  current_theme === "green" ? "red" : "green"
+                )
+              }
+            >
+              Change Theme
+            </button>
+          </div>
+          {/* PLAYER LEFT MESSAGES */}
+          {users.length === 1 && currentUser === "Player 2" && (
+            <h1 className="topInfoText">Player 1 has left the game.</h1>
+          )}
+          {users.length === 1 && currentUser === "Player 1" && (
+            <h1 className="topInfoText">
+              Waiting for Player 2 to join the game.
+            </h1>
+          )}
 
           {users.length === 2 && (
             <>
