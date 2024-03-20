@@ -1,8 +1,8 @@
 const users = [];
 
 const addUser = ({ id, name, room }) => {
-  const numberOdUserRoom = users.filter((user) => user.room === room).length;
-  if (numberOdUserRoom === 2) throw { error: "Room Full" };
+  const numberOfUserRoom = users.filter((user) => user.room === room).length;
+  if (numberOfUserRoom === 2) return { error: "Room Full" };
   const newUser = { id, name, room };
   users.push(newUser);
   return { newUser };
