@@ -622,17 +622,19 @@ function BattlePage() {
   }.png`;
 
   return (
-    <div>
-      <img src={theme[currentTheme].backgroundImage} alt="background" />
+    <div
+      className={`h-screen ${theme[currentTheme].backgroundColor} ${theme[currentTheme].textColor}`}
+    >
       {!roomFull ? (
         <>
           <div className="topInfo">
             <img src={logo} />
             <h1>Game Code: {room}</h1>
             <button
+              className={`game-button m-5`}
               onClick={() =>
                 setCurrentTheme((current_theme) =>
-                  current_theme === "green" ? "red" : "green"
+                  current_theme === "green" ? "sky" : "green"
                 )
               }
             >
@@ -644,7 +646,7 @@ function BattlePage() {
             <h1 className="topInfoText">Player 1 has left the game.</h1>
           )}
           {users.length === 1 && currentUser === "Player 1" && (
-            <h1 className="topInfoText">
+            <h1 className="h-96 flex justify-center items-center topInfoText">
               Waiting for Player 2 to join the game.
             </h1>
           )}
@@ -655,13 +657,13 @@ function BattlePage() {
                 <div>
                   {winner !== "" && (
                     <>
-                      <h1>GAME OVER</h1>
-                      <h2>{winner} wins!</h2>
+                      <h1 className="text-center text-4xl">GAME OVER</h1>
+                      <h2 className="text-center text-4xl">{winner} wins!</h2>
                     </>
                   )}
                 </div>
               ) : (
-                <div>
+                <div className="my-28">
                   {/* PLAYER 1 VIEW */}
                   {currentUser === "Player 1" && (
                     <>
@@ -910,8 +912,8 @@ function BattlePage() {
       )}
 
       <br />
-      <Link to="/">
-        <button className="btn btn-error text-white">QUIT</button>
+      <Link className="flex justify-center content-center" to="/">
+        <button className="game-button red text-white w-48">QUIT</button>
       </Link>
     </div>
   );
