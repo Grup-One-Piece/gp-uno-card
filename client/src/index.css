@@ -24,10 +24,10 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  /* display: flex; */
+  /* place-items: center; */
   min-width: 320px;
-  min-height: 100vh;
+  height: 100vh;
 }
 
 h1 {
@@ -64,25 +64,39 @@ body {
 }
 
 .Homepage {
-  background-image: url("./public/Landing-Page.gif");
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-image: url("/Landing-Page.gif");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-attachment: scroll;
   margin: 0;
-  height: 100vh;
+  height: 100%;
+  min-height: 100vh;
 }
 
 .homepage-menu {
-  position: relative;
-  /* top: 120px; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+}
+
+.homepage-menu img {
+  max-width: 100%;
+  height: auto;
 }
 
 .homepage-form {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* margin-top: 50px; */
+  margin-top: 50px;
+  gap: 10px;
 }
 
 .homepage-form > h1 {
@@ -95,18 +109,30 @@ body {
 }
 
 .homepage-join > input {
-  font-size: 15px;
+  padding: 10px 15px;
+  margin: 5px 0;
+  width: 100%;
+  box-sizing: border-box;
+  /* font-size: 15px;
   width: 150px;
-  line-height: 1.5em;
+  line-height: 1.5em; */
 }
 
 .game-button {
-  transform: translateZ(0);
-  transition: transform 0.2s, box-shadow 0.2s;
-  will-change: transform;
+  font-size: 1rem;
+  color: white;
+  background-color: #646cff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
 }
 
-.game-button:hover,
+.game-button:hover {
+  background-color: #535bf2;
+  transform: scale(1.1);
+}
+
 .game-button:focus {
   transform: scale(1.05) translateZ(20px);
   box-shadow: 0 20px 20px rgba(0, 0, 0, 0.2);
