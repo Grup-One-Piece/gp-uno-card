@@ -1,6 +1,6 @@
 import logo from "../assets/logo.png";
 import backcard from "../assets/Deck.png";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import queryString from "query-string";
@@ -48,11 +48,13 @@ import nineG from "../assets/cards-front/9G.png";
 import nineY from "../assets/cards-front/9Y.png";
 import nineR from "../assets/cards-front/9R.png";
 import Swal from "sweetalert2";
+import { ThemeContext } from "../contexts/ThemeContext";
 
 let socket;
 const ENDPOINT = "http://localhost:3000";
 
 function BattlePage() {
+  const { theme, currentTheme, setCurrentTheme } = useContext(ThemeContext);
   const location = useLocation();
   const data = queryString.parse(location.search);
 
@@ -621,11 +623,21 @@ function BattlePage() {
 
   return (
     <div>
+      <img src={theme[currentTheme].backgroundImage} alt="background" />
       {!roomFull ? (
         <>
           <div className="topInfo">
             <img src={logo} />
             <h1>Game Code: {room}</h1>
+            <button
+              onClick={() =>
+                setCurrentTheme((current_theme) =>
+                  current_theme === "green" ? "red" : "green"
+                )
+              }
+            >
+              Change Theme
+            </button>
           </div>
           {/* PLAYER LEFT MESSAGES */}
           {users.length === 1 && currentUser === "Player 2" && (
