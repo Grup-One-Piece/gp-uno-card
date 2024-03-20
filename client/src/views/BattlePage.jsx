@@ -54,7 +54,7 @@ let socket;
 const ENDPOINT = "http://localhost:3000";
 
 function BattlePage() {
-  const { theme, currentTheme, setCurrentTheme } = useContext(ThemeContext);
+  const { theme, currentTheme, changeTheme } = useContext(ThemeContext);
   const location = useLocation();
   const data = queryString.parse(location.search);
 
@@ -630,14 +630,7 @@ function BattlePage() {
           <div className="topInfo">
             <img src={logo} />
             <h1>Game Code: {room}</h1>
-            <button
-              className={`game-button m-5`}
-              onClick={() =>
-                setCurrentTheme((current_theme) =>
-                  current_theme === "green" ? "sky" : "green"
-                )
-              }
-            >
+            <button className={`game-button m-5`} onClick={changeTheme}>
               Change Theme
             </button>
           </div>
