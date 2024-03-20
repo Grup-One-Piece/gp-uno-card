@@ -1,13 +1,17 @@
 import { createBrowserRouter } from "react-router-dom";
 import NotFound from "../views/NotFound";
+import BattlePage from "../views/BattlePage";
+import Homepage from "../components/homepage";
 
 
 const router = createBrowserRouter([
     {
         path: "/",
+        element: <Homepage />,
     },
     {
-        path: "/room",
+        path: "/play",
+        element: <BattlePage />
     },
     {
         path: "*",
