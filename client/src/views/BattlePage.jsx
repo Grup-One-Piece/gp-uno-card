@@ -1,10 +1,11 @@
 import logo from '../assets/logo.png'
 import backcard from "../assets/Deck.png";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import queryString from 'query-string'
 import io from "socket.io-client";
+import { ThemeContext } from '../contexts/ThemeContext';
 
 let socket
 const ENDPOINT = "http://localhost:3000";
@@ -88,13 +89,17 @@ function BattlePage() {
         }
     };
 
+const {theme,currentTheme,setCurrentTheme}=useContext(ThemeContext)
+
     return (
-        <div >
+        <div>
+            <img src={theme[currentTheme].backgroundImage} alt="background" />
             {!roomFull ? (
                 <>
                     <div className='topInfo'>
                         <img src={logo} />
                         <h1>Game Code: {room}</h1>
+                        <button onClick={()=> setCurrentTheme((current_theme)=>current_theme=== "green"?"red" :"green")}>Change Theme</button>
                     </div>
                     {/* PLAYER LEFT MESSAGES */}
                     {users.length === 1 && currentUser === "Player 2" && (
