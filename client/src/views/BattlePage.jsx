@@ -67,7 +67,10 @@ function BattlePage() {
 
   useEffect(() => {
     if (!room) {
-      console.error("Room code not provided in query parameters");
+      Swal.fire({
+        icon: "error",
+        title: "Room code not found",
+      });
       return;
     }
 
@@ -80,12 +83,18 @@ function BattlePage() {
     socket = io.connect(ENDPOINT, connectionOptions);
 
     socket.on("connect_error", (error) => {
-      console.error("Socket connection error:", error);
+        Swal.fire({
+            icon: "error",
+            title: `Socket connection error: ${error}`,
+          });
     });
 
     socket.emit("join", { room: room }, (error) => {
       if (error) {
-        console.error("Error joining room:", error);
+        Swal.fire({
+            icon: "error",
+            title: `Error joining room: ${error}`,
+          });
         setRoomFull(true);
       }
     });
@@ -325,7 +334,7 @@ function BattlePage() {
         const numberOfPlayedCard = played_card.charAt(0);
         const colorOfPlayedCard = played_card.charAt(played_card.length - 1);
         if (currentColor === colorOfPlayedCard) {
-          console.log("colors matched!");
+          //   console.log("colors matched!");
           if (cardPlayedBy === "Player 1") {
             const removeIndex = player1Deck.indexOf(played_card);
             if (player1Deck.length === 2 && !isUnoButtonPressed) {
@@ -427,7 +436,7 @@ function BattlePage() {
             }
           }
         } else if (currentNumber === numberOfPlayedCard) {
-          console.log("numbers matched!");
+          //   console.log("numbers matched!");
           if (cardPlayedBy === "Player 1") {
             const removeIndex = player1Deck.indexOf(played_card);
             if (player1Deck.length === 2 && !isUnoButtonPressed) {
@@ -530,7 +539,7 @@ function BattlePage() {
         } else {
           Swal.fire({
             icon: "error",
-            title: "Invalid Move! Tolol.",
+            title: "Opps! Invalid Move.",
           });
         }
         break;
