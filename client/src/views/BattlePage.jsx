@@ -83,18 +83,18 @@ function BattlePage() {
     socket = io.connect(ENDPOINT, connectionOptions);
 
     socket.on("connect_error", (error) => {
-        Swal.fire({
-            icon: "error",
-            title: `Socket connection error: ${error}`,
-          });
+      Swal.fire({
+        icon: "error",
+        title: `Socket connection error: ${error}`,
+      });
     });
 
     socket.emit("join", { room: room }, (error) => {
       if (error) {
         Swal.fire({
-            icon: "error",
-            title: `Error joining room: ${error}`,
-          });
+          icon: "error",
+          title: `Error joining room: ${error}`,
+        });
         setRoomFull(true);
       }
     });
