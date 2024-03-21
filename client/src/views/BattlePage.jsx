@@ -629,6 +629,11 @@ function BattlePage() {
   const midleCardP2 = `/src/assets/cards-front/${
     playedCardsPile[playedCardsPile.length - 1]
   }.png`;
+  const midleCardP3 = cardImages[playedCardsPile[playedCardsPile.length - 1]]; // 3Y
+
+  const CardImage = ({ type }) => {
+    return <img className="Card" src={cardImages[type]} alt={type} />;
+  };
 
   return (
     <div
@@ -699,10 +704,8 @@ function BattlePage() {
                           DRAW CARD
                         </button>
                         {playedCardsPile && playedCardsPile.length > 0 && (
-                          <img
-                            className="Card"
-                            src={midleCardP1}
-                            alt={playedCardsPile[playedCardsPile.length - 1]}
+                          <CardImage
+                            type={playedCardsPile[playedCardsPile.length - 1]}
                           />
                         )}
                         <button
@@ -821,7 +824,9 @@ function BattlePage() {
                           DRAW CARD
                         </button>
                         {playedCardsPile && playedCardsPile.length > 0 && (
-                          <img className="Card" src={midleCardP2} />
+                          <CardImage
+                            type={playedCardsPile[playedCardsPile.length - 1]}
+                          />
                         )}
                         <button
                           className="game-button orange"

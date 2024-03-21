@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import logo from "../src/assets/logo.png";
+import landingPage from "../src/assets/Landing-Page.gif";
 
 function Homepage() {
   const [roomCode, setRoomCode] = useState("");
@@ -8,7 +10,7 @@ function Homepage() {
   return (
     <div className="Homepage">
       <div className="homepage-menu">
-        <img src={"/logo.png"} width="200px" />
+        <img src={logo} width="200px" />
         <div className="homepage-form">
           <div className="homepage-join">
             <input
