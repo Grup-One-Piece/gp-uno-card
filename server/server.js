@@ -12,9 +12,11 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 app.use(cors());
-
+//! Menangani koneksi socket
 io.on("connection", (socket) => {
+  //! Menangani event "join" saat pengguna bergabung dengan ruang
   socket.on("join", (payload, callback) => {
+    //! Menghitung jumlah pengguna dalam ruangan
     let numberOfUsersInRomm = getUsersInRoom(payload.room).length;
     const { error, newUser } = addUser({
       id: socket.id,
