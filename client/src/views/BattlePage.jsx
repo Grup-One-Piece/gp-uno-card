@@ -623,14 +623,6 @@ function BattlePage() {
     }
   };
 
-  const midleCardP1 = `/src/assets/cards-front/${
-    playedCardsPile[playedCardsPile.length - 1]
-  }.png`;
-  const midleCardP2 = `/src/assets/cards-front/${
-    playedCardsPile[playedCardsPile.length - 1]
-  }.png`;
-  const midleCardP3 = cardImages[playedCardsPile[playedCardsPile.length - 1]]; // 3Y
-
   const CardImage = ({ type }) => {
     return <img className="Card" src={cardImages[type]} alt={type} />;
   };

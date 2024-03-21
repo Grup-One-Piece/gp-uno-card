@@ -8,7 +8,7 @@ function Homepage() {
   const [roomCode, setRoomCode] = useState("");
 
   return (
-    <div className="Homepage">
+    <div className="Homepage bg-cover bg-center h-screen" style={{backgroundImage: `url(${landingPage})`}}>
       <div className="homepage-menu">
         <img src={logo} width="200px" />
         <div className="homepage-form">
