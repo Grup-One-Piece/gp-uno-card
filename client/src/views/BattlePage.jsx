@@ -51,7 +51,7 @@ import Swal from "sweetalert2";
 import { ThemeContext } from "../contexts/ThemeContext";
 
 let socket;
-const ENDPOINT = "http://localhost:3000";
+const ENDPOINT = "https://uno-card.wadesuuu.xyz/";
 
 function BattlePage() {
   const { theme, currentTheme, changeTheme } = useContext(ThemeContext);
